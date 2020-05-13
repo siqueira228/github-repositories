@@ -27,7 +27,7 @@ export const Owner = styled.header`
   align-items: center;
 
   a {
-    color: #222f3e;
+    color: ${({ theme }) => theme.link_color};
     font-size: 16px;
     text-decoration: none;
   }
@@ -50,7 +50,7 @@ export const Owner = styled.header`
   p {
     margin-top: 5px;
     font-size: 14px;
-    color: #666666;
+    color: ${({ theme }) => theme.text_color};
     line-height: 1.4;
     text-align: center;
     max-width: 400px;
@@ -60,12 +60,12 @@ export const Owner = styled.header`
 export const IssueList = styled.ul`
   padding-top: 30px;
   margin-top: 30px;
-  border-top: 1px solid #eeeeee;
+  border-top: 1px solid ${({ theme }) => theme.border_color_list};
 
   li {
     display: flex;
     padding: 15px 10px;
-    border: 1px solid #eeeeee;
+    border: 1px solid ${({ theme }) => theme.border_color_list};
     border-radius: 4px;
 
     & + li {
@@ -88,10 +88,10 @@ export const IssueList = styled.ul`
 
         a {
           text-decoration: none;
-          color: #333333;
+          color: ${({ theme }) => theme.title_color};
 
           &:hover {
-            color: #222f3e;
+            color: ${({ theme }) => theme.title_color};
           }
         }
 

@@ -1,3 +1,5 @@
 Application to enhance knowledge in ReactJS
 
-For future updates, switch to Hooks.
+Added theme switch with styled components and react hooks
+
+

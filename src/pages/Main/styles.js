@@ -7,10 +7,16 @@ export const Form = styled.form`
 
   input {
     flex: 1;
-    border: 1px solid #eeeeee;
+    border: 1px solid ${({ theme }) => theme.border_input};
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 16px;
+    background-color: ${({ theme }) => theme.background_input};
+    color: ${({ theme }) => theme.text_input};
+
+    &::placeholder {
+      color: ${({ theme }) => theme.placeholder_input};
+    }
   }
 `;
 
@@ -26,9 +32,9 @@ const rotate = keyframes`
 
 export const SubmitButton = styled.button.attrs((props) => ({
   type: 'submit',
-  disabled: props.loading,
+  disabled: props.disabled,
 }))`
-  background: #222f3e;
+  background: ${({ theme }) => theme.button_input_background};
   border: 0;
   padding: 0 15px;
   margin-left: 10px;
@@ -62,13 +68,14 @@ export const List = styled.ul`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    color: ${({ theme }) => theme.text_color};
 
     & + li {
-      border-top: 1px solid #eeeeee;
+      border-top: 1px solid ${({ theme }) => theme.border_color_list};
     }
 
     a {
-      color: #222f3e;
+      color: ${({ theme }) => theme.link_color};
       text-decoration: none;
     }
   }

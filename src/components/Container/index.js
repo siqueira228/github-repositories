@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   max-width: 700px;
-  background: #ffffff;
+  background: ${({ theme }) => theme.container_background};
   border-radius: 4px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   padding: 30px;
@@ -13,6 +13,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    color: ${({ theme }) => theme.title_color};
 
     svg {
       margin-right: 10px;

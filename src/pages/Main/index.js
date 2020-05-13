@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -9,95 +9,98 @@ import Container from '../../components/Container';
 
 import { Form, SubmitButton, List } from './styles';
 
-export default class Main extends Component {
-  constructor() {
-    super();
-    this.state = {
-      newRepo: '',
-      repositories: [],
-      loading: false,
-    };
-  }
+export default function Main() {
+  const [repo, setRepo] = useState('');
+  const [repositories, setRepositories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(true);
 
-  // loading dados localstorage
-  componentDidMount() {
-    const repositories = localStorage.getItem('repositories');
-
-    if (repositories) {
-      this.setState({ repositories: JSON.parse(repositories) });
+  useEffect(() => {
+    async function getRepositories() {
+      const response = localStorage.getItem('repositories');
+      setRepositories(JSON.parse(response));
     }
-  }
+    getRepositories();
+  }, []);
 
-  // set dados localstorage
-  componentDidUpdate(_, prevState) {
-    const { repositories } = this.state;
+  useEffect(() => {
+    localStorage.setItem('repositories', JSON.stringify(repositories));
+  }, [repositories]);
 
-    if (prevState.repositories !== repositories) {
-      localStorage.setItem('repositories', JSON.stringify(repositories));
-    }
-  }
-
-  handleInputChange = (e) => {
-    this.setState({ newRepo: e.target.value });
-  };
-
-  handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    this.setState({ loading: true });
+    setLoading(true);
 
-    const { newRepo, repositories } = this.state;
+    try {
+      const response = await api.get(`/repos/${repo}`);
 
-    const response = await api.get(`/repos/${newRepo}`);
+      const data = {
+        name: response.data.full_name,
+      };
 
-    const data = {
-      name: response.data.full_name,
-    };
-
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
-  };
-
-  render() {
-    const { newRepo, repositories, loading } = this.state;
-    return (
-      <Container>
-        <h1>
-          <FaGithubAlt />
-          Repositórios
-        </h1>
-
-        <Form onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            placeholder="Adicionar repositório"
-            value={newRepo}
-            onChange={this.handleInputChange}
-          />
-
-          <SubmitButton loading={loading ? 1 : 0}>
-            {loading ? (
-              <FaSpinner color="#FFFFFF" size={14} />
-            ) : (
-              <FaPlus color="#FFFFFF" size={14} />
-            )}
-          </SubmitButton>
-        </Form>
-
-        <List>
-          {repositories.map((repository) => (
-            <li key={repository.name}>
-              <span>{repository.name}</span>
-              <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
-                Detalhes
-              </Link>
-            </li>
-          ))}
-        </List>
-      </Container>
-    );
+      const repositoryExists = repositories.filter(
+        (repository) => repository.name === data.name
+      );
+      if (repositoryExists.length === 0) {
+        setRepositories([...repositories, data]);
+        setRepo('');
+        setLoading(false);
+      } else {
+        alert('Repository has already been added');
+        setRepo('');
+        setLoading(false);
+      }
+    } catch (err) {
+      setRepo('');
+      setLoading(false);
+      alert('Repository not found.');
+    }
   }
+
+  function handleInputChange(value) {
+    setRepo(value);
+    if (value !== '') {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }
+
+  return (
+    <Container>
+      <h1>
+        <FaGithubAlt />
+        Repositórios
+      </h1>
+
+      <Form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Adicionar repositório"
+          value={repo}
+          onChange={(e) => handleInputChange(e.target.value)}
+        />
+
+        <SubmitButton disabled={disabled} loading={loading ? 1 : 0}>
+          {loading ? (
+            <FaSpinner color="#FFFFFF" size={14} />
+          ) : (
+            <FaPlus color="#FFFFFF" size={14} />
+          )}
+        </SubmitButton>
+      </Form>
+
+      <List>
+        {repositories.map((repository) => (
+          <li key={repository.name}>
+            <span>{repository.name}</span>
+            <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
+              Detalhes
+            </Link>
+          </li>
+        ))}
+      </List>
+    </Container>
+  );
 }
